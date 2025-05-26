@@ -1,10 +1,3 @@
-"""
-Script for image reconstruction inference with pre-trained models
-Author: Patrick Ebel (github/PatrickTUM), based on the scripts of 
-        Vivien Sainte Fare Garnot (github/VSainteuf)
-License: MIT
-"""
-
 import os
 import sys
 import json
@@ -52,11 +45,6 @@ config = utils.str2list(config, ["encoder_widths", "decoder_widths", "out_conv"]
 
 if config.pretrain: config.batch_size = 32
 
-experime_dir = os.path.join(config.res_dir, config.experiment_name)
-if not os.path.exists(experime_dir): os.makedirs(experime_dir)
-with open(os.path.join(experime_dir, "conf.json"), "w") as file:
-    file.write(json.dumps(vars(config), indent=4))
-
 # seed everything
 seed_packages(config.rdm_seed)
 if __name__ == "__main__": pprint.pprint(config)
@@ -64,12 +52,6 @@ if __name__ == "__main__": pprint.pprint(config)
 # instantiate tensorboard logger
 writer = SummaryWriter(os.path.join(config.res_dir, config.experiment_name))
 
-if config.use_custom: 
-    print('Testing on custom data samples')
-    # define a dictionary for the custom sample, with customized ROI and time points
-    custom = [{ 'input':  {'S1': [get_paired_data(targ_s2, config.root1, mod='s1')], 
-                           'S2': [get_paired_data(targ_s2, config.root1, mod='s2')]},
-                'target': {'S1': [get_paired_data(targ_s2, config.root1, mod='s1')], 'S2': [targ_s2]}}]
 
 def main(config):
     device = torch.device(config.device)
@@ -83,7 +65,7 @@ def main(config):
     
     # get data loader
     if config.pretrain:
-        dt_test        = SEN12MSCR(os.path.expanduser(config.root3), split='test', sample_type=config.sample_type)
+        dt_test        = SEN12MSCR(os.path.expanduser(config.root4), split='test', sample_type=config.sample_type)
     
     dt_test     = torch.utils.data.Subset(dt_test, range(0, min(config.max_samples_count, len(dt_test))))
     test_loader = torch.utils.data.DataLoader(dt_test, batch_size=config.batch_size, shuffle=False)

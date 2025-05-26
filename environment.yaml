@@ -1,26 +1,32 @@
 name: uncrtaints
 channels:
+  - conda-forge
   - nvidia
   - pytorch
   - defaults
 dependencies:
-  - nvidia::cudatoolkit=11.7
+  - conda-forge::cudatoolkit=11.7
   - python
   - pip=20.3
   - pytorch::pytorch=2.0.0
-  - numpy
+  - numpy=1.18.5
+  - pandas=1.0.4
+  - geopandas=0.8.1
+  - tqdm=4.64.0
+  - matplotlib=3.3.4
+  - rasterio=1.2.10
+  - protobuf=3.20.1
   - pip:
-    - matplotlib
     - torchmetrics==0.6.0
     - torchnet==0.0.4
+    - torch_scatter
     - scipy
     - scikit-image
-    - rasterio
-    - natsort
-    - tqdm
-    - Pillow 
-    - dominate 
-    - visdom 
+    - Pillow
+    - dominate
+    - visdom
     - fvcore
     - tensorboard
     - s2cloudless==1.6.0
+    - torchgeometry==0.1.2
+    - torchvision

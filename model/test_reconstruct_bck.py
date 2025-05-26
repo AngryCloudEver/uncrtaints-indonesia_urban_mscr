@@ -11,7 +11,6 @@ import json
 import pprint
 import argparse
 from parse_args import create_parser
-import numpy as np
 
 import torch
 
@@ -21,7 +20,7 @@ sys.path.append(os.path.dirname(dirname))
 from src import utils
 from src.model_utils import get_model, load_checkpoint
 from train_reconstruct import iterate, save_results, prepare_output, import_from_path, seed_packages
-from data.dataLoader import SEN12MSCR, get_paired_data
+from data.dataLoader import SEN12MSCR, SEN12MSCRTS, get_pairedS1
 
 from torch.utils.tensorboard import SummaryWriter
 
@@ -30,6 +29,11 @@ test_config = parser.parse_args()
 
 # grab the PID so we can look it up in the logged config for server-side process management
 test_config.pid = os.getpid()
+
+# related to flag --use_custom:
+# define custom target S2 patches (these will be mosaiced into a single sample), and fetch associated target S1 patches as well as input data
+# (TODO: keeping this hard-coded until a more convenient way to pass it as an argument comes about ...)
+targ_s2 = [f'ROIs1868/73/S2/14/s2_ROIs1868_73_ImgNo_14_2018-06-21_patch_{pdx}.tif' for pdx in [171,172,173, 187,188,189, 203,204,205]]
 
 # load previous config from training directories
 
@@ -64,12 +68,13 @@ if __name__ == "__main__": pprint.pprint(config)
 # instantiate tensorboard logger
 writer = SummaryWriter(os.path.join(config.res_dir, config.experiment_name))
 
+
 if config.use_custom: 
     print('Testing on custom data samples')
     # define a dictionary for the custom sample, with customized ROI and time points
-    custom = [{ 'input':  {'S1': [get_paired_data(targ_s2, config.root1, mod='s1')], 
-                           'S2': [get_paired_data(targ_s2, config.root1, mod='s2')]},
-                'target': {'S1': [get_paired_data(targ_s2, config.root1, mod='s1')], 'S2': [targ_s2]}}]
+    custom = [{ 'input':  {'S1': [get_pairedS1(targ_s2, config.root1, mod='s1', time=tdx) for tdx in range(0,3)], 
+                           'S2': [get_pairedS1(targ_s2, config.root1, mod='s2', time=tdx) for tdx in range(0,3)]},
+                'target': {'S1': [get_pairedS1(targ_s2, config.root1, mod='s1')], 'S2': [targ_s2]}}]
 
 def main(config):
     device = torch.device(config.device)
@@ -83,7 +88,11 @@ def main(config):
     
     # get data loader
     if config.pretrain:
-        dt_test        = SEN12MSCR(os.path.expanduser(config.root3), split='test', sample_type=config.sample_type)
+        dt_test        = SEN12MSCR(os.path.expanduser(config.root3), split='test', region=config.region, sample_type=config.sample_type)
+    else:
+        imported_path  = None if any((config.min_cov!=0, config.max_cov!=1)) else import_from_path('test', config)
+        dt_test        = SEN12MSCRTS(os.path.expanduser(config.root2), split='test', region=config.region, sample_type=config.sample_type , n_input_samples=config.input_t, 
+                                import_data_path=imported_path, sampler='fixed', custom_samples=None if not config.use_custom else custom)
     
     dt_test     = torch.utils.data.Subset(dt_test, range(0, min(config.max_samples_count, len(dt_test))))
     test_loader = torch.utils.data.DataLoader(dt_test, batch_size=config.batch_size, shuffle=False)

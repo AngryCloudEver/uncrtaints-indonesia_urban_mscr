@@ -104,7 +104,7 @@ def get_generator(config):
                 separate_out=config.separate_out,
                 use_v=config.use_v,
                 block_type=config.block_type,
-                is_mono=config.pretrain
+                is_mono=False
             )
     else: raise NotImplementedError
     return model
@@ -183,7 +183,7 @@ def load_model(config, model, train_out_layer=True, load_out_partly=True):
     print(f'\nTrain these layers: {train_these}')
 
     if config.resume_from:
-        resume_at = int(config.trained_checkp.split('.pth.tar')[0].split('_')[-1])
+        resume_at = config.resume_at
         print(f'\nResuming training at epoch {resume_at+1}/{config.epochs}, loading optimizers and schedulers')
         # if continuing training, then also load states of previous runs' optimizers and schedulers
         # ---else, we start optimizing from scratch but with the model parameters loaded above

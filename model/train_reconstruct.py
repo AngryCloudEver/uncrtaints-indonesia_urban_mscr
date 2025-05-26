@@ -21,7 +21,7 @@ dirname = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(dirname))
 
 from parse_args import create_parser
-from data.dataLoader import SEN12MSCR, SEN12MSCRTS
+from data.dataLoader import SEN12MSCR
 from src.model_utils import get_model, save_model, freeze_layers, load_model, load_checkpoint
 from src.learning.metrics import img_metrics, avg_img_metrics
 
@@ -339,6 +339,7 @@ def iterate(model, data_loader, config, writer, mode="train", epoch=None, device
                     if config.plot_every>0 and idx % config.plot_every == 0:
                         plot_dir = os.path.join(config.res_dir, config.experiment_name, 'plots', f'epoch_{epoch}', f'{mode}')
                         plot_img(x[bdx], 'in', plot_dir, file_id=idx)
+                        plot_img(x[bdx], 's1', plot_dir, file_id=idx)
                         plot_img(out[bdx], 'pred', plot_dir, file_id=idx)
                         plot_img(y[bdx], 'target', plot_dir, file_id=idx)
                         plot_img(((out[bdx]-y[bdx])**2).mean(1, keepdims=True), 'err', plot_dir, file_id=idx)
@@ -346,6 +347,7 @@ def iterate(model, data_loader, config, writer, mode="train", epoch=None, device
                         if var is not None: plot_img(var.mean(2, keepdims=True)[bdx], 'var', plot_dir, file_id=idx)
                     if config.export_every>0 and idx % config.export_every == 0:
                         export_dir = os.path.join(config.res_dir, config.experiment_name, 'export', f'epoch_{epoch}', f'{mode}')
+                        export(x[bdx], 'in', export_dir, file_id=idx)
                         export(out[bdx], 'pred', export_dir, file_id=idx)
                         export(y[bdx], 'target', export_dir, file_id=idx)
                         if var is not None: 
@@ -570,16 +572,14 @@ def main(config):
     prepare_output(config)
     device = torch.device(config.device)
 
+    print("----------------------------------------------")
+    
     # define data sets
     if config.pretrain: # pretrain / training on mono-temporal data
-        dt_train    = SEN12MSCR(os.path.expanduser(config.root3), split='train', region=config.region, sample_type=config.sample_type)
-        dt_val      = SEN12MSCR(os.path.expanduser(config.root3), split='val', region=config.region, sample_type=config.sample_type) 
-        dt_test     = SEN12MSCR(os.path.expanduser(config.root3), split='test', region=config.region, sample_type=config.sample_type)
-    else:
-        dt_train    = SEN12MSCRTS(os.path.expanduser(config.root1), split='train', region=config.region, sample_type=config.sample_type, sampler = 'random' if config.vary_samples else 'fixed', n_input_samples=config.input_t, import_data_path=import_from_path('train', config), min_cov=config.min_cov, max_cov=config.max_cov)
-        dt_val      = SEN12MSCRTS(os.path.expanduser(config.root2), split='val', region='all', sample_type=config.sample_type , n_input_samples=config.input_t, import_data_path=import_from_path('val', config)) 
-        dt_test     = SEN12MSCRTS(os.path.expanduser(config.root2), split='test', region='all', sample_type=config.sample_type , n_input_samples=config.input_t, import_data_path=import_from_path('test', config))
-
+        dt_train    = SEN12MSCR(os.path.expanduser(config.root3), split='train', sample_type=config.sample_type)
+        dt_val      = SEN12MSCR(os.path.expanduser(config.root3), split='val', sample_type=config.sample_type) 
+        dt_test     = SEN12MSCR(os.path.expanduser(config.root3), split='test', sample_type=config.sample_type)
+ 
     # wrap to allow for subsampling, e.g. for test runs etc
     dt_train    = torch.utils.data.Subset(dt_train, range(0, min(config.max_samples_count, len(dt_train), int(len(dt_train)*config.max_samples_frac))))
     dt_val      = torch.utils.data.Subset(dt_val, range(0, min(config.max_samples_count, len(dt_val), int(len(dt_train)*config.max_samples_frac))))
@@ -625,16 +625,16 @@ def main(config):
     # do random weight initialization
     print('\nInitializing weights randomly.')
     model.netG.apply(weight_init)
-    
-    if config.trained_checkp and len(config.trained_checkp)>0:
-        # load weights from the indicated checkpoint
-        print(f'Loading weights from (pre-)trained checkpoint {config.trained_checkp}')
-        load_model(config, model, train_out_layer=True, load_out_partly=config.model in ['uncrtaints'])
+    # if config.trained_checkp and len(config.trained_checkp)>0:
+    #     # load weights from the indicated checkpoint
+    #     print(f'Loading weights from (pre-)trained checkpoint {config.trained_checkp}')
+    #     load_model(config, model, train_out_layer=True, load_out_partly=config.model in ['uncrtaints'])
 
     with open(os.path.join(config.res_dir, config.experiment_name, "conf.json"), "w") as file:
         file.write(json.dumps(vars(config), indent=4))
     print(f"TOTAL TRAINABLE PARAMETERS: {config.N_params}\n")
     print(model)
+
 
     # Optimizer and Loss
     model.criterion = losses.get_loss(config)

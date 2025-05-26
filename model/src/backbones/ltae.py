@@ -213,7 +213,7 @@ class LTAE2dtiny(nn.Module):
         if self.inconv is not None:
             out = self.inconv(out.permute(0, 2, 1)).permute(0, 2, 1)
 
-        if self.positional_encoder is not None:
+        if self.positional_encoder is not None and batch_positions is not None:
             bp = (
                 batch_positions.unsqueeze(-1)
                 .repeat((1, 1, h))
