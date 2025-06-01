@@ -3,11 +3,11 @@ import rasterio
 import numpy as np
 import matplotlib.pyplot as plt
 
-cloudy_dir = "data/TestingFull/28_April_2025_Makassar/Sentinel2_Mosaic_Makassar.tif"
-sentinel1_dir = "data/TestingFull/28_April_2025_Makassar/Sentinel1_Mosaic_Makassar.tif"
+cloudy_dir = "data/TestingFull/30_Mei_2025_Makassar/Sentinel2_Mosaic_Makassar.tif"
+sentinel1_dir = "data/TestingFull/30_Mei_2025_Makassar/Sentinel1_Mosaic_Makassar.tif"
 
-output_cloudy = "data/TestingFull/28_April_2025_Makassar/Test/Sentinel-2-Cloudy/Makassar"
-output_sentinel1 = "data/TestingFull/28_April_2025_Makassar/Test/Sentinel-1/Makassar"
+output_cloudy = "data/TestingFull/30_Mei_2025_Makassar/Test/Sentinel-2-Cloudy/Makassar"
+output_sentinel1 = "data/TestingFull/30_Mei_2025_Makassar/Test/Sentinel-1/Makassar"
 
 os.makedirs(output_cloudy, exist_ok=True)
 os.makedirs(output_sentinel1, exist_ok=True)

@@ -22,7 +22,7 @@ def create_parser(mode='train'):
         parser.add_argument("--resume_at", default=-1, type=int, help="Epoch to resume training from (may re-weight --lr in the optimizer) or epoch to load checkpoint from at test time")
     elif mode=='test':
         # parser.add_argument("--res_dir", default="./inference", type=str, help="Path to directory where results are written.")
-        parser.add_argument("--res_dir", default="./TestingFull/28_April_2025_Makassar/Inference", type=str, help="Path to directory where results are written.")
+        parser.add_argument("--res_dir", default="./TestingFull/30_Mei_2025_Makassar/Inference", type=str, help="Path to directory where results are written.")
         parser.add_argument("--plot_every", default=1, type=int, help="Interval (in items) of exporting plots at validation or test time. Set -1 to disable")
         parser.add_argument("--export_every", default=1, type=int, help="Interval (in items) of exporting data at validation or test time. Set -1 to disable")
         parser.add_argument("--resume_at", default=-1, type=int, help="Epoch to load checkpoint from and run testing with (use -1 for best on validation split)")
@@ -77,7 +77,7 @@ def create_parser(mode='train'):
     parser.add_argument("--root1", default='/home/data/SEN12MSCRTS', type=str, help="path to your copy of SEN12MS-CR-TS")
     parser.add_argument("--root2", default='/home/data/SEN12MSCRTS', type=str, help="path to your copy of SEN12MS-CR-TS validation & test splits")
     parser.add_argument("--root3", default='../data/_URBAN_MSCR', type=str, help="path to your copy of SEN12MS-CR for pretraining")
-    parser.add_argument("--root4", default='../data/TestingFull/28_April_2025_Makassar', type=str, help="path to your to be reconstructed data")
+    parser.add_argument("--root4", default='../data/TestingFull/30_Mei_2025_Makassar', type=str, help="path to your to be reconstructed data")
     parser.add_argument("--precomputed", default='/home/code/UnCRtainTS/util/precomputed', type=str, help="path to pre-computed cloud statistics")
     parser.add_argument("--region", default="all", type=str, help="region to (sub-)sample ROI from [all|africa|america|asiaEast|asiaWest|europa]")
     parser.add_argument("--max_samples_count", default=int(1e9), type=int, help="count of data (sub-)samples to take")

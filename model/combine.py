@@ -42,11 +42,32 @@ def reconstruct_image_from_patches(folder_path, width, height, save_dir, save_na
 
     return brightened
 
-folder = r"model\TestingFull\28_April_2025_Makassar\Inference\monotemporalL2\plots\epoch_1\test"
-save_folder = r"data\TestingFull\28_April_2025_Makassar\Result"
+folder = r"model\TestingFull\30_Mei_2025_Makassar\Inference\monotemporalL2\plots\epoch_1\test"
+save_folder = r"data\TestingFull\30_Mei_2025_Makassar\Result"
 
-width = 2034
-height = 2887
+city = 'Makassar'
+
+if city == 'Jakarta':
+    width = 5103
+    height = 3648
+elif city == 'Bandung':
+    width = 4312
+    height = 4098
+elif city == 'Makassar':
+    width = 2034
+    height = 2887
+elif city == 'Medan':
+    width = 4541
+    height = 3480
+elif city == 'Palembang':
+    width = 2646
+    height = 2344
+elif city == 'Semarang':
+    width = 2424
+    height = 1799
+elif city == 'Surabaya':
+    width = 2195
+    height = 2260
 
 output_img = reconstruct_image_from_patches(folder, width, height, save_folder, 'Makassar Result.png')
 output_img.show()

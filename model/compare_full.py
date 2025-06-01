@@ -15,14 +15,14 @@ def load_tif(filepath, bands=None):
             image = src.read()
     return image
 
-sentinel1_dir = "data/TestingFull/28_April_2025_Makassar/Sentinel1_Mosaic_Makassar.tif"
+sentinel1_dir = "data/TestingFull/30_Mei_2025_Makassar/Sentinel1_Mosaic_Makassar.tif"
 
 # Load prediction result (target) first to get size
-target = np.asarray(Image.open('data/TestingFull/28_April_2025_Makassar/Result/Makassar Result.png'))
+target = np.asarray(Image.open('data/TestingFull/30_Mei_2025_Makassar/Result/Makassar Result.png'))
 target_height, target_width = target.shape[:2]
 
 # Load cloudy input and resize
-input_img = Image.open('data/TestingFull/28_April_2025_Makassar/Result/Makassar Cloudy.png')
+input_img = Image.open('data/TestingFull/30_Mei_2025_Makassar/Result/Makassar Cloudy.png')
 input_resized = input_img.resize((target_width, target_height), Image.BICUBIC)
 input_array = np.asarray(input_resized)
 
@@ -56,6 +56,6 @@ plt.title("Prediction (UnCRtainTS)")
 plt.axis('off')
 
 plt.tight_layout()
-plt.suptitle('Hasil Model Cloud Removal Makassar - 28 April 2025', fontsize=16)
-plt.savefig('data/TestingFull/28_April_2025_Makassar/Result/Makassar Comparison.png', dpi=300)
+plt.suptitle('Hasil Model Cloud Removal Makassar - 30 Mei 2025', fontsize=16)
+plt.savefig('data/TestingFull/30_Mei_2025_Makassar/Result/Makassar Comparison.png', dpi=300)
 plt.show()

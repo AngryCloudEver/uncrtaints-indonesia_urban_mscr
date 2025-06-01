@@ -35,7 +35,7 @@ def convert_single_tif_to_rgb_png(tif_path, save_dir):
     print(f"✅ Saved: {save_path}")
 
 # Contoh pemakaian:
-tif_path = r"data\TestingFull\28_April_2025_Makassar\Sentinel2_Mosaic_Makassar.tif"
-save_dir = r"data\TestingFull\28_April_2025_Makassar\Result"
+tif_path = r"data\TestingFull\30_Mei_2025_Makassar\Sentinel2_Mosaic_Makassar.tif"
+save_dir = r"data\TestingFull\30_Mei_2025_Makassar\Result"
 
 convert_single_tif_to_rgb_png(tif_path, save_dir)
